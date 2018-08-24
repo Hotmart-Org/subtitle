@@ -4,10 +4,11 @@ import java.math.BigDecimal;
 
 public class VttUtils {
 
+	private static final String TIME_FORMAT = "%02d:%02d:%02d.%03d";
+
 	public static String formatTime(BigDecimal seconds) {
-		BigDecimal bigSeconds = new BigDecimal(seconds.toString());
-		int whole = bigSeconds.intValue();
-		BigDecimal frac = bigSeconds.subtract(new BigDecimal(whole));
+		int whole = seconds.intValue();
+		BigDecimal frac = seconds.subtract(new BigDecimal(whole));
 		
 		int f = frac.multiply(new BigDecimal(1000)).intValue();
 		
@@ -17,7 +18,7 @@ public class VttUtils {
 		int h = m / 60;
 		m = m % 60;
 		
-		return String.format("%02d:%02d:%02d.%03d", h,m,s,f);
+		return String.format(TIME_FORMAT, h,m,s,f);
 	}
 	
 	public static BigDecimal parseTime(String time) {

@@ -77,7 +77,7 @@ public class SrtParser implements SubtitleParser {
                 } catch (NumberFormatException e) {
                     throw new SubtitleParsingException(String.format(
                             "Unable to parse cue number: %s",
-                            textLine));
+                            textLine), lineCount);
                 }
 
                 cue.setId(textLine);
@@ -90,7 +90,7 @@ public class SrtParser implements SubtitleParser {
             if (cursorStatus == CursorStatus.CUE_ID) {
                 if (!textLine.substring(13, 16).equals("-->")) {
                 	throw new TimecodeBadlyFormattedException(String.format(
-                            "Timecode textLine is badly formated: %s", textLine), lineCount);
+                            "Timecode is badly formated. Expected '-->' in line: %s", textLine), lineCount);
                 }
                 
                 String startTime = textLine.substring(0, 12);
@@ -98,11 +98,11 @@ public class SrtParser implements SubtitleParser {
                 
                 if (startTime.length() != 12 || endTime.length() != 12) {
                 	throw new TimecodeBadlyFormattedException(String.format(
-                            "Timecode textLine is badly formated: %s", textLine), lineCount);
+                            "Timecode is badly formated: %s", textLine), lineCount);
                 }
 
-                cue.setStartTime(this.parseTimeCode(startTime));
-                cue.setEndTime(this.parseTimeCode(endTime));
+                cue.setStartTime(this.parseTimeCode(startTime, lineCount));
+                cue.setEndTime(this.parseTimeCode(endTime, lineCount));
                 cursorStatus = CursorStatus.CUE_TIMECODE;
                 continue;
             }
@@ -126,8 +126,7 @@ public class SrtParser implements SubtitleParser {
                 continue;
             }
 
-            throw new SubtitleParsingException(String.format(
-                    "Unexpected line: %s", textLine));
+            throw new SubtitleParsingException(String.format("Unexpected line: %s", textLine), lineCount);
         }
 
         if (cue != null) {
@@ -137,7 +136,7 @@ public class SrtParser implements SubtitleParser {
         return srtObject;
     }
 
-    private SubtitleTimeCode parseTimeCode(String timeCodeString) throws SubtitleParsingException, InvalidTimeRangeException {
+    private SubtitleTimeCode parseTimeCode(String timeCodeString, int lineCount) throws SubtitleParsingException, InvalidTimeRangeException {
         try {
             int hour = Integer.parseInt(timeCodeString.substring(0, 2));
             int minute = Integer.parseInt(timeCodeString.substring(3, 5));
@@ -146,7 +145,7 @@ public class SrtParser implements SubtitleParser {
             return new SubtitleTimeCode(hour, minute, second, millisecond);
         } catch (NumberFormatException e) {
             throw new SubtitleParsingException(String.format(
-                    "Unable to parse time code: %s", timeCodeString));
+                    "Unable to parse time code: %s", timeCodeString), lineCount);
         }
     }
 }

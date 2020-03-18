@@ -90,7 +90,7 @@ public class SrtParser implements SubtitleParser {
             if (cursorStatus == CursorStatus.CUE_ID) {
                 if (!textLine.substring(13, 16).equals("-->")) {
                 	throw new TimecodeBadlyFormattedException(String.format(
-                            "Timecode textLine is badly formated: %s", textLine), lineCount);
+                            "Timecode is badly formated. Expected '-->' in line: %s", textLine), lineCount);
                 }
                 
                 String startTime = textLine.substring(0, 12);
@@ -98,7 +98,7 @@ public class SrtParser implements SubtitleParser {
                 
                 if (startTime.length() != 12 || endTime.length() != 12) {
                 	throw new TimecodeBadlyFormattedException(String.format(
-                            "Timecode textLine is badly formated: %s", textLine), lineCount);
+                            "Timecode is badly formated: %s", textLine), lineCount);
                 }
 
                 cue.setStartTime(this.parseTimeCode(startTime, lineCount));

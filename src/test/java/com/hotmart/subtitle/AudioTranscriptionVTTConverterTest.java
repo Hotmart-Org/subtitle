@@ -20,6 +20,35 @@ public class AudioTranscriptionVTTConverterTest {
   }
 
   @Test
+  public void format_shouldAddTimestampHeader() {
+    AudioTranscription transcription = new AudioTranscription();
+    AudioTranscriptionChunk chunk = new AudioTranscriptionChunk();
+    chunk.setStartTime(BigDecimal.ZERO);
+    chunk.setEndTime(BigDecimal.TEN);
+    transcription.addChunk(chunk);
+
+    chunk.setContent(Arrays.asList("acabou", "tudo"));
+    assertThat(vttConverterService.format(transcription, 10000L))
+        .isEqualTo(
+            "WEBVTT"
+                + "\nX-TIMESTAMP-MAP=MPEGTS:10000,LOCAL:00:00:00.000"
+                + "\n"
+                + "\n1"
+                + "\n00:00:00.000 --> 00:00:10.000"
+                + "\nacabou tudo\n\n");
+
+    chunk.setContent(Arrays.asList("sem", "quebrar", "linha"));
+    assertThat(vttConverterService.format(transcription, 100000L))
+        .isEqualTo(
+            "WEBVTT"
+                + "\nX-TIMESTAMP-MAP=MPEGTS:100000,LOCAL:00:00:00.000"
+                + "\n"
+                + "\n1"
+                + "\n00:00:00.000 --> 00:00:10.000"
+                + "\nsem quebrar linha\n\n");
+  }
+
+  @Test
   public void format_shouldNotBreakLine() {
     AudioTranscription transcription = new AudioTranscription();
     AudioTranscriptionChunk chunk = new AudioTranscriptionChunk();

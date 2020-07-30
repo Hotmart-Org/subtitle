@@ -17,10 +17,12 @@ import fr.noop.subtitle.util.SubtitleTimeCode;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import org.apache.log4j.Logger;
 
 /** Created by clebeaupin on 11/10/15. */
 public class VttWriter implements SubtitleWriter {
   private final String charset; // Charset used to encode file
+  private final Logger log = Logger.getLogger(this.getClass());
 
   public VttWriter(String charset) {
     this.charset = charset;
@@ -32,6 +34,7 @@ public class VttWriter implements SubtitleWriter {
       // Write header
       os.write("WEBVTT\n".getBytes(this.charset));
       if (startPtsOffset > 0) {
+        log.debug("[Subtitle] Writing X-TIMESTAMP-MAP header with value: " + startPtsOffset);
         os.write(
             String.format("X-TIMESTAMP-MAP=MPEGTS:%d,LOCAL:00:00:00.000%n", startPtsOffset)
                 .getBytes(this.charset));

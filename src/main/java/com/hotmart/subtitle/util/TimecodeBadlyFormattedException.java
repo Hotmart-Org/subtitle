@@ -4,10 +4,9 @@ import fr.noop.subtitle.model.SubtitleParsingException;
 
 public class TimecodeBadlyFormattedException extends SubtitleParsingException {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public TimecodeBadlyFormattedException(String message, int errorLine) {
-		super(message, errorLine);
-	}
-	
+  public TimecodeBadlyFormattedException(String message, int errorLine) {
+    super(message, errorLine);
+  }
 }

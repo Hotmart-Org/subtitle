@@ -16,7 +16,7 @@ public class AudioTranscriptionVTTConverterTest {
 
   @Before
   public void setup() {
-    vttConverterService = new AudioTranscriptionVTTConverter(20);
+    vttConverterService = new AudioTranscriptionVTTConverter(20, 0L);
   }
 
   @Test

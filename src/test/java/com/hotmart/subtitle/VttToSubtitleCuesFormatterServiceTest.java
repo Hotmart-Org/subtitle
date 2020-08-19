@@ -16,7 +16,7 @@ public class VttToSubtitleCuesFormatterServiceTest {
 
   @Before
   public void setup() {
-    vttFormatterService = new SubtitleCuesVTTConverter();
+    vttFormatterService = new SubtitleCuesVTTConverter(0L);
   }
 
   @Test

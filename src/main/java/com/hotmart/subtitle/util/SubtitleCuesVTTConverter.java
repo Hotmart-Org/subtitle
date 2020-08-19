@@ -9,10 +9,21 @@ import java.util.regex.Pattern;
 
 public class SubtitleCuesVTTConverter {
 
+  private final long defaultMPEGTS;
+
+  public SubtitleCuesVTTConverter(long defaultMPEGTS) {
+    this.defaultMPEGTS = defaultMPEGTS;
+  }
+
   public String format(SubtitleCues subtitleCues, long startPtsOffset) {
     StringBuilder srt = new StringBuilder("WEBVTT\n");
     if (startPtsOffset > 0) {
-      srt.append(String.format("X-TIMESTAMP-MAP=MPEGTS:%d,LOCAL:00:00:00.000%n", startPtsOffset));
+      srt.append(String.format("X-TIMESTAMP-MAP=MPEGTS:%d,LOCAL:00:00:00.000", startPtsOffset))
+          .append("\n");
+    } else if (defaultMPEGTS > 0) {
+      // using default mpegts
+      srt.append(String.format("X-TIMESTAMP-MAP=MPEGTS:%d,LOCAL:00:00:00.000", defaultMPEGTS))
+          .append("\n");
     }
     srt.append("\n"); // empty line separator.
     int counter = 1;
@@ -30,11 +41,10 @@ public class SubtitleCuesVTTConverter {
   }
 
   public SubtitleCues parse(String subtitle) throws SubtitleCuesVTTException {
-    try (BufferedReader reader = new BufferedReader(new StringReader(subtitle));) {
+    try (BufferedReader reader = new BufferedReader(new StringReader(subtitle))) {
       SubtitleCues subtitleCues = new SubtitleCues();
 
-      String ignored = reader.readLine();
-      String line; // WEBVTT
+      String line;
 
       String timeRegex =
           "((\\d{2}:)?\\d{2}:\\d{2}\\.\\d{3})(\\s-->\\s)((\\d{2}:)?\\d{2}:\\d{2}\\.\\d{3})";
@@ -42,7 +52,7 @@ public class SubtitleCuesVTTConverter {
 
       while ((line = reader.readLine()) != null) {
         // parser will ignore x-timestamp-map header
-        if (line.trim().matches("X-TIMESTAMP-MAP=MPEGTS:\\d+,LOCAL:00:00:00.000")){
+        if (line.trim().matches("WEBVTT | X-TIMESTAMP-MAP=MPEGTS:\\d+,LOCAL:00:00:00.000")) {
           line = reader.readLine();
         }
         if (line.trim().matches("\\d+")) {

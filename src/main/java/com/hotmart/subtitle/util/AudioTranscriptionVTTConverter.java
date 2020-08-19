@@ -5,15 +5,22 @@ import java.util.StringJoiner;
 public class AudioTranscriptionVTTConverter {
 
   private final Integer maxCharCount;
+  private final long defaultMPEGTS;
 
-  public AudioTranscriptionVTTConverter(Integer maxCharCount) {
+  public AudioTranscriptionVTTConverter(Integer maxCharCount, long defaultMPEGTS) {
     this.maxCharCount = maxCharCount;
+    this.defaultMPEGTS = defaultMPEGTS;
   }
 
   public String format(AudioTranscription transcription, long startPtsOffset) {
     StringBuilder srt = new StringBuilder("WEBVTT\n");
     if (startPtsOffset > 0L) {
-      srt.append(String.format("X-TIMESTAMP-MAP=MPEGTS:%d,LOCAL:00:00:00.000%n", startPtsOffset));
+      srt.append(String.format("X-TIMESTAMP-MAP=MPEGTS:%d,LOCAL:00:00:00.000", startPtsOffset))
+          .append("\n");
+    } else if (defaultMPEGTS > 0L) {
+      // using default mpegts
+      srt.append(String.format("X-TIMESTAMP-MAP=MPEGTS:%d,LOCAL:00:00:00.000%n", defaultMPEGTS))
+          .append("\n");
     }
     srt.append("\n");
     int counter = 1;
